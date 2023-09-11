@@ -1,10 +1,5 @@
 import subprocess
 
-# Faire les conversions de Mo en Go
-# utiliser unattered pour les options de la VM
-# Cas où nom est déjà pris
-# check si le fichier est bien un iso
-
 # Fonction pour récupérer les OS supportés
 def get_supported_os_types():
     try:

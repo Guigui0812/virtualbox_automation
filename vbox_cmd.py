@@ -3,18 +3,29 @@ import psutil
 import re
 import vbox_automation
 
+# Faire la conversion de la taille du disque dur de Mo vers Go
+# Vérifier que les valeurs sont des entiers
+# Vérifier que les valeurs sont positives
+# Vérifier que la mémoire vive est supérieure à 512 Mo
+# Vérifier que la taille du disque dur est supérieure à 8 Go
+# Vérifier que le nombre de processeurs est inférieur au nombre de processeurs physiques
+# Vérifier que l'interface réseau existe si bridged est sélectionné
+
+
+# Obtenir une liste des machines virtuelles sans les guillemets
 def get_vm_list_clean():
 
     vm_list = vbox_automation.get_vm()
     vm_list_clean = []
 
+    # Supprimer les guillemets
     for vm in vm_list:
         vm = vm.replace('"', '')
         vm_list_clean.append(vm)
 
     return vm_list_clean
 
-
+# Afficher la liste des machines virtuelles
 def display_vm_list():
 
     print("Liste des machines virtuelles :")
@@ -25,6 +36,7 @@ def display_vm_list():
         vm = vm.replace('"', '')
         print(" - " + vm)
 
+# Menu pour cloner une machine virtuelle
 def clone_vm_menu():
 
     display_vm_list()
@@ -51,6 +63,7 @@ def clone_vm_menu():
     if return_code == 0:
         print("La machine virtuelle a été clonée avec succès.")
 
+# Menu pour configurer le réseau de la machine virtuelle
 def vm_network_menu(vm_name):
 
     config_network = True
@@ -97,12 +110,14 @@ def vm_network_menu(vm_name):
         if network_bool == "2":
             config_network = False
 
+# Menu pour configurer les propriétés de la machine virtuelle
 def vm_properties_menu():
 
     vm_list_clean = get_vm_list_clean()
 
     vm_name = input("Nom de la machine virtuelle : ")
 
+    # Vérifier les conditions d'entrée pour le nom de la machine virtuelle
     while vm_name == "" or re.match("^[a-zA-Z0-9_]*$", vm_name) == False or vm_name in vm_list_clean:
         print("Le nom de la machine virtuelle ne peut pas être vide, contenir des caractères spéciaux ou être déjà utilisé.")
         vm_name = input("Nom de la machine virtuelle : ")
@@ -147,6 +162,7 @@ def vm_properties_menu():
     if return_code == 0:
         print("La machine virtuelle a été créée avec succès.")
 
+# Menu principal
 def main_menu():
     print("#############################################")
     print("##                                         ##")
