@@ -1,8 +1,55 @@
-import subprocess
 import os
 import psutil
 import re
 import vbox_automation
+
+def get_vm_list_clean():
+
+    vm_list = vbox_automation.get_vm()
+    vm_list_clean = []
+
+    for vm in vm_list:
+        vm = vm.replace('"', '')
+        vm_list_clean.append(vm)
+
+    return vm_list_clean
+
+
+def display_vm_list():
+
+    print("Liste des machines virtuelles :")
+
+    vm_list = vbox_automation.get_vm()
+
+    for vm in vm_list:
+        vm = vm.replace('"', '')
+        print(" - " + vm)
+
+def clone_vm_menu():
+
+    display_vm_list()
+
+    vm_name = input("Nom de la machine virtuelle à cloner : ")
+
+    vm_list_clean = get_vm_list_clean()
+
+    # Vérifier que la machine virtuelle existe
+    while vm_name == "" or vm_name not in vm_list_clean:
+        print("La machine virtuelle n'existe pas.")
+        vm_name = input("Nom de la machine virtuelle à cloner : ")
+
+    clone_name = input("Nom du clone : ")
+
+    # Vérifier les conditions d'entrée pour le nom du clone
+    while clone_name == "" or clone_name in vbox_automation.get_vm():
+        print("Le nom du clone ne peut pas être vide ou déjà utilisé.")
+        clone_name = input("Nom du clone : ")
+
+    # Cloner la machine virtuelle
+    return_code = vbox_automation.clone_vm(vm_name, clone_name)
+
+    if return_code == 0:
+        print("La machine virtuelle a été clonée avec succès.")
 
 def vm_network_menu(vm_name):
 
@@ -52,10 +99,12 @@ def vm_network_menu(vm_name):
 
 def vm_properties_menu():
 
+    vm_list_clean = get_vm_list_clean()
+
     vm_name = input("Nom de la machine virtuelle : ")
 
-    while vm_name == "" or re.match("^[a-zA-Z0-9_]*$", vm_name) == False:
-        print("Le nom de la machine virtuelle ne peut pas être vide ou contenir des caractères spéciaux.")
+    while vm_name == "" or re.match("^[a-zA-Z0-9_]*$", vm_name) == False or vm_name in vm_list_clean:
+        print("Le nom de la machine virtuelle ne peut pas être vide, contenir des caractères spéciaux ou être déjà utilisé.")
         vm_name = input("Nom de la machine virtuelle : ")
 
     path_to_iso = input("Chemin vers le fichier ISO : ")
@@ -108,7 +157,8 @@ def main_menu():
     print("Sélectionnez une option:")
     print("1 - Créer une nouvelle machine")
     print("2 - Lister les machines")
-    print("3. Quitter")
+    print("3 - Cloner une machine")
+    print("4. Quitter")
 
     option = input("Entrez votre choix: ")
 
@@ -119,4 +169,8 @@ def main_menu():
     if option == "1":
         vm_properties_menu()
     elif option == "2":
-        list_virtual_machines()
+        display_vm_list()
+    elif option == "3":
+        clone_vm_menu()
+    elif option == "4":
+        exit()

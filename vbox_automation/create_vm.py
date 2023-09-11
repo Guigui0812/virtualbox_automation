@@ -1,10 +1,7 @@
 import subprocess
 
-# Chemin ou stocker à ajouter
-# Chemin où stoker la machine virtuelle
 # Faire les conversions de Mo en Go
 # utiliser unattered pour les options de la VM
-# Fixer les {vm_name} dans les commandes
 # Cas où nom est déjà pris
 # check si le fichier est bien un iso
 
