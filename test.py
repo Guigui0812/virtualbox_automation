@@ -1,11 +1,16 @@
-import psutil
-import os
-import re
+import paramiko
 
-addrs = psutil.net_if_addrs()
-print(addrs.keys())
+try:
+    paramiko.util.log_to_file('paramiko.log')
+    
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # SSH to VM
+    client.connect(hostname="192.168.146.57", port=22, username="guillaume", password="Kolonel0812!", timeout=10)
+    (stdin, stdout, stderr) = client.exec_command("uname")
 
-test = "C:\\Users\\Guillaume\\Downloads\\ubuntu-22.04.3-live-server-amd64.iso"
+    print(stdout.readlines())
 
-if os.path.isfile(test.encode('unicode_escape')) == True:
-    print("ok")
+except Exception as e:
+
+    print(f"SSH connection failed: {e}")
