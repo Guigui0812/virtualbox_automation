@@ -11,6 +11,7 @@ import vbox_automation
 # Vérifier que le nombre de processeurs est inférieur au nombre de processeurs physiques
 # Vérifier que l'interface réseau existe si bridged est sélectionné
 
+# Pour le NAT network : VBoxManage natnetwork add --netname natnet1 --network "192.168.22.0/24" --enable
 
 # Obtenir une liste des machines virtuelles sans les guillemets
 def get_vm_list_clean():
@@ -164,29 +165,41 @@ def vm_properties_menu():
 
 # Menu principal
 def main_menu():
-    print("#############################################")
-    print("##                                         ##")
-    print("##  Welcome to the Virtual Machine Manager ##")
-    print("##                                         ##")
-    print("#############################################")
+   
+    loop_menu = True
 
-    print("Sélectionnez une option:")
-    print("1 - Créer une nouvelle machine")
-    print("2 - Lister les machines")
-    print("3 - Cloner une machine")
-    print("4. Quitter")
+    while loop_menu == True:
+    
+        print("#############################################")
+        print("##                                         ##")
+        print("##  Welcome to the Virtual Machine Manager ##")
+        print("##                                         ##")
+        print("#############################################")
 
-    option = input("Entrez votre choix: ")
+        print("Sélectionnez une option:")
+        print("1 - Créer une nouvelle machine")
+        print("2 - Lister les machines")
+        print("3 - Cloner une machine")
+        print("4 - Se connecter à une machine")
+        print("5. Quitter")
 
-    while option not in ["1", "2", "3"]:
-        print("Ceci n'est pas une option.")
         option = input("Entrez votre choix: ")
 
-    if option == "1":
-        vm_properties_menu()
-    elif option == "2":
-        display_vm_list()
-    elif option == "3":
-        clone_vm_menu()
-    elif option == "4":
-        exit()
+        while option not in ["1", "2", "3", "4", "5"]:
+            print("Ceci n'est pas une option.")
+            option = input("Entrez votre choix: ")
+
+        if option == "1":
+            vm_properties_menu()
+        elif option == "2":
+            display_vm_list()
+        elif option == "3":
+            clone_vm_menu()
+        elif option == "4":
+            vm_name = input("Nom de la machine virtuelle : ")
+            vbox_automation.get_vm_network(vm_name)
+
+       
+
+        elif option == "5":
+            loop_menu = False

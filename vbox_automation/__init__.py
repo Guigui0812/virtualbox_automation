@@ -4,3 +4,4 @@ from .create_vm import set_vm_config
 from .manage_vm import run_vm
 from .manage_vm import get_vm
 from .manage_vm import clone_vm
+from .manage_vm import get_vm_network

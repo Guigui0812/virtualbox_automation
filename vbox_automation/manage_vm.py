@@ -1,5 +1,23 @@
 import subprocess
 
+def get_vm_network(vm_name):
+
+    try:
+        # Exécute la commande VBoxManage pour obtenir l'adresse IP
+        result = subprocess.run(["VBoxManage", "guestproperty", "get", vm_name, "/VirtualBox/GuestInfo/Net/0/V4/IP"],stdout=subprocess.PIPE,text=True)
+
+        if result.returncode == 0:
+            output_lines = result.stdout.splitlines()
+            for line in output_lines:
+                if line.startswith("Value: "):
+                    ip_address = line[len("Value: "):]
+                    print(f"IP address: {ip_address}")
+        else:
+            print("Error while retrieving VM IP:")
+            print(result.stderr)
+    except Exception as e:
+        print(f"Error: {e}")
+
 def clone_vm(vm_name, clone_name):
 
     try:
