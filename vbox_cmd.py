@@ -197,7 +197,7 @@ def main_menu():
             clone_vm_menu()
         elif option == "4":
             vm_name = input("Nom de la machine virtuelle : ")
-            vbox_automation.get_vm_network(vm_name)
+            vbox_automation.connect_to_vm(vm_name)
 
        
 
