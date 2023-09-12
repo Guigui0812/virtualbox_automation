@@ -41,20 +41,23 @@ def set_vm_network(vm_name, network_type, interface = ""):
         print("An error occurred:", str(e))
 
 # Fonction pour configurer la machine virtuelle selon les paramètres définis par l'utilisateur
-def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_mb):
+def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb):
 
     try:
 
         # Création de la machine virtuelle
         subprocess.run(["VBoxManage", "createvm", "--name", vm_name, "--register"])
 
+        # Convertir les GO reçus en MO
+        disk_size_mb = int(disk_size_gb) * 1024
+
         # Configuration de la mémoire vive, du nombre de processeurs et de la taille du disque dur
         subprocess.run(["VBoxManage", "modifyvm", vm_name, "--memory", memory_mb, "--cpus", nb_cpu])
-        subprocess.run(["VBoxManage", "createhd", "--filename", "{vm_name}/{vm_name}.vdi", "--size", str(disk_size_mb)])
+        subprocess.run(["VBoxManage", "createhd", "--filename", f"{vm_name}/{vm_name}.vdi", "--size", str(disk_size_mb)])
 
         # Création du disque dur virtuel
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "SATA Controller", "--add", "sata", "--bootable", "on"])
-        subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "SATA Controller", "--port", "0", "--device", "0", "--type", "hdd", "--medium", "{vm_name}/{vm_name}.vdi"])  
+        subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "SATA Controller", "--port", "0", "--device", "0", "--type", "hdd", "--medium", f"{vm_name}/{vm_name}.vdi"])  
 
         # Attachement de l'ISO pour l'installation du système d'exploitation
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "IDE Controller", "--add", "ide"])

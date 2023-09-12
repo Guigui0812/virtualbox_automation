@@ -3,12 +3,7 @@ import psutil
 import re
 import vbox_automation
 
-# Faire la conversion de la taille du disque dur de Mo vers Go
 # Vérifier que les valeurs sont des entiers
-# Vérifier que les valeurs sont positives
-# Vérifier que la mémoire vive est supérieure à 512 Mo
-# Vérifier que la taille du disque dur est supérieure à 8 Go
-# Vérifier que le nombre de processeurs est inférieur au nombre de processeurs physiques
 # Vérifier que l'interface réseau existe si bridged est sélectionné
 
 # Pour le NAT network : VBoxManage natnetwork add --netname natnet1 --network "192.168.22.0/24" --enable
@@ -133,26 +128,26 @@ def vm_properties_menu():
     nb_cpu = input("Nombre de processeurs : ")
 
     # Vérifier les conditions d'entrée pour le nombre de processeurs
-    while nb_cpu == "" or nb_cpu.isdigit() == False or nb_cpu == "0" or int(nb_cpu) > psutil.cpu_count():
+    while nb_cpu == "" or nb_cpu.isdigit() == False or int(nb_cpu) >= psutil.cpu_count() or int(nb_cpu) <= 0:
         print("Le nombre de processeurs doit être un nombre entier.")
         nb_cpu = input("Nombre de processeurs : ")
 
-    memory_mb = input("Quantité de mémoire vive (en Mo) : ")
+    memory_mb = input("Quantité de mémoire vive (en Go) : ")
 
     # Vérifier les conditions d'entrée pour la quantité de mémoire vive
-    while memory_mb == "" or memory_mb.isdigit() == False or memory_mb == "0":
+    while memory_mb == "" or memory_mb.isdigit() == False or memory_mb < "512":
         print("La quantité de mémoire vive doit être un nombre entier.")
-        memory_mb = input("Quantité de mémoire vive (en Mo) : ")
+        memory_mb = input("Quantité de mémoire vive (en Go) : ")
 
-    disk_size_mb = input("Taille du disque dur (en Mo) : ")
+    disk_size_gb = input("Taille du disque dur (en Go) : ")
 
     # Vérifier les conditions d'entrée pour la taille du disque dur
-    while disk_size_mb == "" or disk_size_mb.isdigit() == False or disk_size_mb == "0":
+    while disk_size_gb == "" or disk_size_gb.isdigit() == False or disk_size_gb < "8":
         print("La taille du disque dur doit être un nombre entier.")
-        disk_size_mb = input("Taille du disque dur (en Mo) : ")
+        disk_size_gb = input("Taille du disque dur (en Go) : ")
 
     # Création de la machine virtuelle
-    vbox_automation.set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_mb)
+    vbox_automation.set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb)
     
     # Configuration du réseau de la machine virtuelle
     vm_network_menu(vm_name)
@@ -181,7 +176,8 @@ def main_menu():
         print("2 - Lister les machines")
         print("3 - Cloner une machine")
         print("4 - Se connecter à une machine")
-        print("5. Quitter")
+        print("5 - Démarrer une machine")
+        print("6. Quitter")
 
         option = input("Entrez votre choix: ")
 
@@ -198,8 +194,9 @@ def main_menu():
         elif option == "4":
             vm_name = input("Nom de la machine virtuelle : ")
             vbox_automation.connect_to_vm(vm_name)
-
-       
-
         elif option == "5":
+            vm_name = input("Nom de la machine virtuelle : ")
+            display_vm_list()
+            vbox_automation.run_vm(vm_name)
+        elif option == "6":
             loop_menu = False
