@@ -1,2 +1,5 @@
 # Ignore __pycache__ directories
-global-exclude __pycache__
+**/__pycache__/
+
+# Ignore {vm_name} 
+{vm_name}/

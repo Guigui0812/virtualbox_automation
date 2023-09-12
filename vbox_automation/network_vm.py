@@ -44,45 +44,49 @@ def get_vm_ip(vm_name):
         print(f"Error: {e}")
     return None
 
-# SSH to VM
+# Prompt SSH pour la connexion à la VM et exécution de commandes
 def ssh_to_vm(vm_ip, username, password):
     try:
         ssh_client = paramiko.SSHClient()
+        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh_client.connect(vm_ip, port=22, username=username, password=password)
 
-        # You can perform SSH operations here
+        connection_open = True
+
+        while connection_open:
+            command = input("Entrez une commande : ")
+            if command == "Exit":
+                connection_open = False
+            else:
+                stdin, stdout, stderr = ssh_client.exec_command(command)
+                print(stdout.read().decode())
+                print(stderr.read().decode())
 
         ssh_client.close()
         return True
     
     except Exception as e:
         print(f"SSH connection failed: {e}")
-        return False
 
 def connect_to_vm(vm_name):
 
-    # Get the VM network type
-    network_type = get_vm_network_type(vm_name)
-    print(f"Type de réseau de la VM : {network_type}")
+    try:
+        host = ""
+        username = ""
+        password = ""
 
-    # Check if it's a Bridged network
-    if network_type == "Bridged":
-        vm_ip = get_vm_ip(vm_name)
-        print(f"IP de la VM : ")
+        print("Entrez les informations de connexion à la VM :")
 
-        if vm_ip:
-            username = "guillaume"
-            password = "Kolonel0812!"
-            if ssh_to_vm("192.168.146.57", username, password):
-                print("Vous êtes connecté à la VM.")
-            else:
-                print("La connexion SSH a échoué")
-        else:
-            print("Impossible de se connecter à la VM.")
-    elif network_type == "NAT":
-        print("VM is in NAT mode. SSH may require port forwarding.")
-
-        # Ajouter la connexion avec le port à spécifier + préciser que l'IP est celle de la machine hôte
-
-    else:
-        print("Unknown network type or VM not found.")
+        while host == "" :
+            host = input("Adresse IP de la VM : ")
+        
+        while username == "" :
+            username = input("Nom d'utilisateur : ")
+        
+        while password == "" :
+            password = input("Mot de passe : ")
+        
+        ssh_to_vm(host, username, password)
+    
+    except Exception as e:
+        print(f"Error: {e}")
