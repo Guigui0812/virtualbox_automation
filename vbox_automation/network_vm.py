@@ -5,44 +5,84 @@ import re
 # Faire une boucle pour envoyé les commandes à la VM à la suite comme dans le terminal
 # Si "Exit" alors on sort de la boucle, on ferme la connexion et on retourne au menu principal
 
-# Obtenir le type de réseau de la VM
-def get_vm_network_type(vm_name):
-    try:
-        result = subprocess.run(["VBoxManage", "showvminfo", vm_name], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+### Fonctions permettant de configurer une VM en réseau interne ###
 
-        if result.returncode == 0:
-            lines = result.stdout.split("\n")
-            for line in lines:
-                if re.match(r"NIC \d:", line):
-                    if "Bridged" in line:
-                        return "Bridged"
-                    elif "NAT" in line:
-                        return "NAT"
-                    elif "Host-only" in line:
-                        return "Host-only"
-                    else:
-                        return "Unknown"
+
+
+
+### Fonctions permettant de configurer une VM en Host-Only ###
+
+def create_hostonly_network():
+
+    try:
+        subprocess.run(["VBoxManage", "hostonlyif", "create"])
 
     except Exception as e:
-        print(f"Error: {e}")
-        return "Unknown"
+        print("An error occurred:", str(e))
 
-# Obtenir l'IP de la VM
-def get_vm_ip(vm_name):
+def get_hostonly_networks():
+
     try:
-        result = subprocess.run(["VBoxManage", "guestproperty", "get", vm_name, "/VirtualBox/GuestInfo/Net/0/V4/IP"],stdout=subprocess.PIPE,text=True)
-        
-        if result.returncode == 0:
-            lines = result.stdout.split("\n")
-            for line in lines:
-                if line.startswith("Value: "):
-                    ip_address = line[len("Value: "):]
-                    print(f"IP de la VM : {ip_address}")
-                    return ip_address.strip()
-                
+        result = subprocess.run(["VBoxManage", "list", "hostonlyifs"], text=True, stdout=subprocess.PIPE)
+
+        hostonly_networks = []
+        lines = result.stdout.split("\n")
+
+        for line in lines:
+            if "Name:" in line:
+                network = line.split(":")[1].strip()
+                hostonly_networks.append(network)
+        return hostonly_networks
+    
     except Exception as e:
-        print(f"Error: {e}")
-    return None
+        print("An error occurred:", str(e))
+
+def configure_hostonly_network(vm_name, interface_nb, interface_hostonly):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "hostonly", "--hostonlyadapter1", interface_hostonly])
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+### Fonctions permettant de configurer une VM en NAT ###
+
+def configure_nat_port_forwarding(vm_name, guest_port, host_port, rule_name, number_of_rules):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--natpf{number_of_rules}", f"{rule_name},tcp,,{host_port},,{guest_port}"])
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+def configure_nat_network(vm_name, interface_nb, network_name):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "natnetwork", "--nat-network1", network_name])
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+# Fonctions permettant de configurer une VM en Bridge
+
+def configure_bridge_network(vm_name, host_interface, interface_nb):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "bridged", "--bridgeadapter1", host_interface])
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+def configure_intnet_network(vm_name, interface_nb, network_name):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "intnet", "--intnet1", network_name])
+    except Exception as e:
+        print("An error occurred:", str(e))
+
+def configure_simple_nat(vm_name, interface_nb):
+
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "nat"])
+
+    except Exception as e:
+        print("An error occurred:", str(e))
 
 # Prompt SSH pour la connexion à la VM et exécution de commandes
 def ssh_to_vm(vm_ip, username, password):

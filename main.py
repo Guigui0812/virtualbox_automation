@@ -1,5 +1,4 @@
 from vbox_cmd import main_menu
-from vbox_gui import main_gui
 
 if __name__ == "__main__":
 
@@ -20,5 +19,3 @@ if __name__ == "__main__":
 
     if version == "1":
         main_menu()
-    elif version == "2":
-        main_gui()

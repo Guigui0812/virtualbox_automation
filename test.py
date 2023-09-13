@@ -1,16 +1,17 @@
-import paramiko
+import subprocess 
 
-try:
-    paramiko.util.log_to_file('paramiko.log')
-    
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # SSH to VM
-    client.connect(hostname="192.168.146.57", port=22, username="guillaume", password="Kolonel0812!", timeout=10)
-    (stdin, stdout, stderr) = client.exec_command("uname")
+# Script to get network interfaces names
 
-    print(stdout.readlines())
+# Get network interfaces names
+result = subprocess.run(["ipconfig", "/all"], stdout=subprocess.PIPE, text=True)
 
-except Exception as e:
+interfaces = []
 
-    print(f"SSH connection failed: {e}")
+print(result.stdout)
+
+for line in result.stdout.split("\n"):
+    if "Description" in line:
+        interfaces.append(line.split(":")[1].strip())
+
+for element in interfaces:
+    print(element)
