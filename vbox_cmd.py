@@ -4,7 +4,7 @@ import re
 import vbox_automation
 import subprocess
 
-# Vérifier que les valeurs sont des entiers
+# Vérifier les types d'OS afin de les prendre en charge
 
 # Obtenir une liste des machines virtuelles sans les guillemets
 def get_vm_list_clean():
@@ -254,9 +254,9 @@ def vm_properties_menu():
     memory_mb = input("Quantité de mémoire vive (en Mo) : ")
 
     # Vérifier les conditions d'entrée pour la quantité de mémoire vive
-    while memory_mb == "" or memory_mb.isdigit() == False or memory_mb < "512":
+    while memory_mb == "" or memory_mb.isdigit() == False or int(memory_mb) > psutil.virtual_memory().total or int(memory_mb) <= 0:
         print("La quantité de mémoire vive doit être un nombre entier.")
-        memory_mb = input("Quantité de mémoire vive (en Go) : ")
+        memory_mb = input("Quantité de mémoire vive (en Mo) : ")
 
     disk_size_gb = input("Taille du disque dur (en Go) : ")
 
@@ -265,8 +265,27 @@ def vm_properties_menu():
         print("La taille du disque dur doit être un nombre entier.")
         disk_size_gb = input("Taille du disque dur (en Go) : ")
 
+
+    username = input("Nom d'utilisateur : ")
+
+    while username == "" or re.match("^[a-zA-Z0-9_]*$", username) == False:
+        print("Le nom d'utilisateur ne peut pas être vide ou contenir des caractères spéciaux.")
+        username = input("Nom d'utilisateur : ")
+
+    login = input("Login : ")
+
+    while login == "" or re.match("^[a-zA-Z0-9_]*$", login) == False:
+        print("Le login ne peut pas être vide ou contenir des caractères spéciaux.")
+        login = input("Login : ")
+
+    password = input("Mot de passe : ")
+
+    while password == "" or re.match("^[a-zA-Z0-9_]*$", password) == False:
+        print("Le mot de passe ne peut pas être vide ou contenir des caractères spéciaux.")
+        password = input("Mot de passe : ")
+
     # Création de la machine virtuelle
-    vbox_automation.set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb)
+    vbox_automation.set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, username, login, password)
     
     # Configuration du réseau de la machine virtuelle
     vm_network_menu(vm_name)
