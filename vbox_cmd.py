@@ -6,8 +6,6 @@ import subprocess
 
 # Vérifier que les valeurs sont des entiers
 
-# Pour le NAT network : VBoxManage natnetwork add --netname natnet1 --network "192.168.22.0/24" --enable
-
 # Obtenir une liste des machines virtuelles sans les guillemets
 def get_vm_list_clean():
 
@@ -137,20 +135,22 @@ def vm_hostonly_menu(vm_name, interface_count):
     # Obtenir les interfaces réseau host-only
     hostonly_networks = vbox_automation.get_hostonly_networks()
 
+    hostonly_networks_cpt = 1
+
     # Afficher les interfaces réseau host-only
     for network in hostonly_networks:
-        print(network)
+        print(hostonly_networks_cpt + " - " + network)
 
     # Demander à l'utilisateur de choisir l'interface réseau host-only à utiliser
-    interface_hostonly = input("Entrez le nom de l'interface réseau host-only à utiliser : ")
+    interface_choice = input("Entrez le nom de l'interface réseau host-only à utiliser : ")
 
     # Vérifier les conditions d'entrée pour le nom de l'interface réseau host-only
-    while interface_hostonly == "" or interface_hostonly not in hostonly_networks:
+    while interface_choice == "" or interface_choice.isdigit() == False or int(interface_choice) > len(hostonly_networks) or int(interface_choice) <= 0:
         print("Le nom de l'interface réseau host-only est invalide.")
-        interface_hostonly = input("Entrez le nom de l'interface réseau host-only à utiliser : ")
+        interface_choice = input("Entrez le nom de l'interface réseau host-only à utiliser : ")
 
     # Configuration de l'interface réseau host-only
-    vbox_automation.configure_hostonly_network(vm_name, interface_hostonly, interface_count)
+    vbox_automation.configure_hostonly_network(vm_name, hostonly_networks[int(interface_choice) - 1], interface_count)
 
 def vm_bridge_menu(vm_name, interface_count):
 

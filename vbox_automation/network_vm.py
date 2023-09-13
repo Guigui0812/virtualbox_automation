@@ -7,8 +7,13 @@ import re
 
 ### Fonctions permettant de configurer une VM en réseau interne ###
 
+def configure_internal_network(vm_name, interface_nb):
 
-
+    try:
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "intnet"])
+    
+    except Exception as e:
+        print("An error occurred:", str(e))
 
 ### Fonctions permettant de configurer une VM en Host-Only ###
 
@@ -37,7 +42,7 @@ def get_hostonly_networks():
     except Exception as e:
         print("An error occurred:", str(e))
 
-def configure_hostonly_network(vm_name, interface_nb, interface_hostonly):
+def configure_hostonly_network(vm_name, interface_hostonly, interface_nb):
 
     try:
         subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "hostonly", "--hostonlyadapter1", interface_hostonly])
