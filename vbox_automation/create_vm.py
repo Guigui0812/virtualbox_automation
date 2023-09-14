@@ -29,7 +29,7 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
     try:
 
         # Création de la machine virtuelle
-        subprocess.run(["VBoxManage", "createvm", "--name", vm_name, "--ostype", "Ubuntu22_LTS_64", "--register"])
+        subprocess.run(["VBoxManage", "createvm", "--name", vm_name,"--ostype", "Ubuntu_64", "--register"])
 
         # Convertir les GO reçus en MO
         disk_size_mb = int(disk_size_gb) * 1024
@@ -46,7 +46,7 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "IDE Controller", "--add", "ide"])
         subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", path_to_iso])
 
-        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--install-additions", "--time-zone", "CET", "--language", "fr", "--country", "FR"])
+        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--install-additions"])
                         
         #--post-install-command", "apt-get update && apt-get install openssh-server"])
                         

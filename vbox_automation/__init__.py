@@ -3,7 +3,6 @@ from .create_vm import set_vm_config
 from .manage_vm import run_vm
 from .manage_vm import get_vm
 from .manage_vm import clone_vm
-from .network_vm import connect_to_vm
 from .network_vm import configure_bridge_network    
 from .network_vm import configure_hostonly_network
 from .network_vm import configure_intnet_network
@@ -13,3 +12,6 @@ from .network_vm import configure_nat_port_forwarding
 from .network_vm import create_hostonly_network
 from .network_vm import get_hostonly_networks
 from .network_vm import configure_hostonly_network
+from .network_vm import get_vm_ip
+from .network_vm import ssh_to_vm
+from .network_vm import get_vm_network_type

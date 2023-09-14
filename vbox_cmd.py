@@ -6,6 +6,8 @@ import subprocess
 
 # Vérifier les types d'OS afin de les prendre en charge
 
+# En fonction du type de network, utiliser une ip différente pour se connecter à la VM
+
 # Obtenir une liste des machines virtuelles sans les guillemets
 def get_vm_list_clean():
 
@@ -24,7 +26,7 @@ def display_vm_list():
 
     print("Liste des machines virtuelles :")
 
-    vm_list = vbox_automation.get_vm_list_clean()
+    vm_list = get_vm_list_clean()
 
     for vm in vm_list:
         vm = vm.replace('"', '')
@@ -35,24 +37,29 @@ def clone_vm_menu():
 
     display_vm_list()
 
-    vm_name = input("Nom de la machine virtuelle à cloner : ")
-
     vm_list_clean = get_vm_list_clean()
 
-    # Vérifier que la machine virtuelle existe
-    while vm_name == "" or vm_name not in vm_list_clean:
-        print("La machine virtuelle n'existe pas.")
-        vm_name = input("Nom de la machine virtuelle à cloner : ")
+    vm_count = 0
 
-    clone_name = input("Nom du clone : ")
+    for vm in vm_list_clean:
+        print(vm_count + " - " + vm)
+        vm_count += 1
+
+    choice = input("Choix de la machine à cloner : ")
 
     # Vérifier les conditions d'entrée pour le nom du clone
-    while clone_name == "" or clone_name in vbox_automation.get_vm():
-        print("Le nom du clone ne peut pas être vide ou déjà utilisé.")
-        clone_name = input("Nom du clone : ")
+    while choice == "" or choice.isdigit() == False or int(choice) > len(vm_list_clean) or int(choice) <= 0:
+        print("La VM choisie est invalide.")
+        choice = input("Choix de la machine à cloner : ")
+
+    vm_name = input("Nom du clone : ")
+
+    while vm_name == "" or re.match("^[a-zA-Z0-9_]*$", vm_name) == False or vm_name in vm_list_clean:
+        print("Le nom du clone ne peut pas être vide, contenir des caractères spéciaux ou être déjà utilisé.")
+        vm_name = input("Nom du clone : ")
 
     # Cloner la machine virtuelle
-    return_code = vbox_automation.clone_vm(vm_name, clone_name)
+    return_code = vbox_automation.clone_vm(vm_name, vm_list_clean[int(choice) - 1])
 
     if return_code == 0:
         print("La machine virtuelle a été clonée avec succès.")
@@ -157,11 +164,11 @@ def vm_bridge_menu(vm_name, interface_count):
     print("##### Configuration du mode bridged #####")
 
     interfaces = get_host_network_interfaces()
-    interface_count = 1
+    option_cp = 1
 
     for interface in interfaces:
         print(f"{interface_count} - {interface}")
-        interface_count += 1
+        option_cp += 1
     
     interface = input("Entrez le numéro de l'interface réseau à utiliser pour le mode bridged : ")
 
@@ -265,7 +272,6 @@ def vm_properties_menu():
         print("La taille du disque dur doit être un nombre entier.")
         disk_size_gb = input("Taille du disque dur (en Go) : ")
 
-
     username = input("Nom d'utilisateur : ")
 
     while username == "" or re.match("^[a-zA-Z0-9_]*$", username) == False:
@@ -296,6 +302,34 @@ def vm_properties_menu():
     if return_code == 0:
         print("La machine virtuelle a été créée avec succès.")
 
+def ssh_menu(vm_name):
+
+    vm_ip = vbox_automation.get_vm_ip(vm_name)
+    username = ""
+    password = ""
+
+    vbox_automation.get_vm_network_type(vm_name)
+
+    if vm_ip == None:
+        
+        print("Impossible de récupérer l'adresse IP de la VM.")
+        print("Entrez l'ip de la VM : ")
+
+        # Vérification du format de l'adresse IP
+        while vm_ip == "" :
+            vm_ip = input("Adresse IP de la VM : ")
+        
+
+    print("Entrez les informations de connexion : ")
+
+    while username == "" :
+        username = input("Nom d'utilisateur : ")
+    
+    while password == "" :
+        password = input("Mot de passe : ")
+      
+    vbox_automation.ssh_to_vm(vm_ip, username, password)
+    
 # Menu principal
 def main_menu():
    
@@ -331,7 +365,10 @@ def main_menu():
             clone_vm_menu()
         elif option == "4":
             vm_name = input("Nom de la machine virtuelle : ")
-            vbox_automation.connect_to_vm(vm_name)
+
+
+
+            ssh_menu(vm_name)
         elif option == "5":
             vm_name = input("Nom de la machine virtuelle : ")
             display_vm_list()
