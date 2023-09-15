@@ -268,7 +268,7 @@ def vm_properties_menu():
     disk_size_gb = input("Taille du disque dur (en Go) : ")
 
     # Vérifier les conditions d'entrée pour la taille du disque dur
-    while disk_size_gb == "" or disk_size_gb.isdigit() == False or disk_size_gb < "8":
+    while disk_size_gb == "" or disk_size_gb.isdigit() == False:
         print("La taille du disque dur doit être un nombre entier.")
         disk_size_gb = input("Taille du disque dur (en Go) : ")
 

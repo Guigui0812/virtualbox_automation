@@ -48,7 +48,7 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "IDE Controller", "--add", "ide"])
         subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", path_to_iso])
 
-        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--time-zone", "CET", "--language", "fr", "--country", "FR"])
+        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--time-zone", "CET", "--country", "FR", "--language", "fr_FR"])
 
         #--post-install-command", "apt-get update && apt-get install openssh-server"])
                         
