@@ -296,6 +296,37 @@ def vm_properties_menu():
     if return_code == 0:
         print("La machine virtuelle a été créée avec succès.")
 
+def clone_vm_menu():
+    
+        display_vm_list()
+    
+        vm_list_clean = get_vm_list_clean()
+        choice_cpt = 0
+
+        for vm in vm_list_clean:
+            choice_cpt += 1
+            print(f"{choice_cpt} - {vm}")
+
+        vm_choice = input("Choisissez la machine à cloner : ")
+
+        # Vérifier que la machine à cloner existe
+        while vm_choice == "" or int(choice_cpt) <= 0 or int(choice_cpt) > len(vm_list_clean):
+            print("Votre choix est invalide.")
+            vm_choice = input("Choisissez la machine à cloner : ")
+        
+        clone_name = input("Nom du clone : ")
+
+        # Vérifier les conditions d'entrée pour le nom du clone
+        while clone_name == "" or clone_name in vbox_automation.get_vm():
+            print("Le nom du clone ne peut pas être vide ou déjà utilisé.")
+            clone_name = input("Nom du clone : ")
+    
+        # Cloner la machine virtuelle
+        return_code = vbox_automation.clone_vm(vm_list_clean[int(vm_choice) - 1], clone_name)
+    
+        if return_code == 0:
+            print("Clonation réussie.")
+
 # Menu principal
 def main_menu():
    
