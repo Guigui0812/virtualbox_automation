@@ -302,13 +302,27 @@ def vm_properties_menu():
     if return_code == 0:
         print("La machine virtuelle a été créée avec succès.")
 
+# Menu de connexion SSH
 def ssh_menu(vm_name):
 
-    vm_ip = vbox_automation.get_vm_ip(vm_name)
+    vm_list = get_vm_list_clean()
+    vm_count = 0
+
+    for vm in vm_list:
+        print(vm_count + " - " + vm)
+        vm_count += 1
+
+    choice = input("Choix de la machine à laquelle se connecter : ")
+
+    while choice == "" or choice.isdigit() == False or int(choice) > len(vm_list) or int(choice) <= 0:
+        print("La VM choisie est invalide.")
+        choice = input("Choix de la machine à laquelle se connecter : ")
+    
+    vm_ip = vbox_automation.get_vm_ip(vm_list[int(choice) - 1])
     username = ""
     password = ""
 
-    vbox_automation.get_vm_network_type(vm_name)
+    vbox_automation.get_vm_network_type(vm_list[int(choice) - 1])
 
     if vm_ip == None:
         
@@ -330,6 +344,25 @@ def ssh_menu(vm_name):
       
     vbox_automation.ssh_to_vm(vm_ip, username, password)
     
+# Menu pour démarrer une machine virtuelle
+def run_vm_menu():
+
+    vm_list = get_vm_list_clean()
+
+    vm_count = 0
+
+    for vm in vm_list:
+        print(vm_count + " - " + vm)
+        vm_count += 1
+
+    choice = input("Choix de la machine à démarrer : ")
+
+    while choice == "" or choice.isdigit() == False or int(choice) > len(vm_list) or int(choice) <= 0:
+        print("La VM choisie est invalide.")
+        choice = input("Choix de la machine à démarrer : ")
+
+    vbox_automation.run_vm(vm_list[int(choice) - 1])
+
 # Menu principal
 def main_menu():
    
@@ -365,8 +398,6 @@ def main_menu():
             clone_vm_menu()
         elif option == "4":
             vm_name = input("Nom de la machine virtuelle : ")
-
-
 
             ssh_menu(vm_name)
         elif option == "5":
