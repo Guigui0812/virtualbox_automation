@@ -18,7 +18,7 @@ def clone_vm(vm_name, clone_name):
 def run_vm(vm_name):
 
     try:
-        result = subprocess.run(["VBoxManage", "startvm", vm_name, "--type", "headless"])
+        result = subprocess.run(["VBoxManage", "startvm", vm_name], text=True)
         return result.returncode
     except Exception as e:
         print("Un problème est survenu lors du démarrage de la VM :", str(e))

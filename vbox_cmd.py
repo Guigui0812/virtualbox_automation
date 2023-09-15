@@ -167,7 +167,7 @@ def vm_bridge_menu(vm_name, interface_count):
     option_cp = 1
 
     for interface in interfaces:
-        print(f"{interface_count} - {interface}")
+        print(f"{option_cp} - {interface}")
         option_cp += 1
     
     interface = input("Entrez le numéro de l'interface réseau à utiliser pour le mode bridged : ")
@@ -303,7 +303,7 @@ def vm_properties_menu():
         print("La machine virtuelle a été créée avec succès.")
 
 # Menu de connexion SSH
-def ssh_menu(vm_name):
+def ssh_menu():
 
     vm_list = get_vm_list_clean()
     vm_count = 0
@@ -397,12 +397,8 @@ def main_menu():
         elif option == "3":
             clone_vm_menu()
         elif option == "4":
-            vm_name = input("Nom de la machine virtuelle : ")
-
-            ssh_menu(vm_name)
+            ssh_menu()
         elif option == "5":
-            vm_name = input("Nom de la machine virtuelle : ")
-            display_vm_list()
-            vbox_automation.run_vm(vm_name)
+            run_vm_menu()
         elif option == "6":
             loop_menu = False

@@ -1,6 +1,7 @@
 import subprocess
 
 # iso path: C:\Users\Guillaume\Downloads\ubuntu-22.04.3-live-server-amd64.iso
+# Automatiser le user.
 
 # Fonction pour récupérer les OS supportés
 def get_supported_os_types():
@@ -36,6 +37,7 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
 
         # Configuration de la mémoire vive, du nombre de processeurs et de la taille du disque dur
         subprocess.run(["VBoxManage", "modifyvm", vm_name, "--memory", memory_mb, "--cpus", nb_cpu])
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, "--vram", "128"])
         subprocess.run(["VBoxManage", "createhd", "--filename", ("C:\\Users\\Guillaume\\VirtualBox VMs" + f"\\{vm_name}\\{vm_name}.vdi"), "--size", str(disk_size_mb)])
 
         # Création du disque dur virtuel
@@ -46,8 +48,8 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "IDE Controller", "--add", "ide"])
         subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", path_to_iso])
 
-        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--install-additions"])
-                        
+        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--time-zone", "CET", "--language", "fr", "--country", "FR"])
+
         #--post-install-command", "apt-get update && apt-get install openssh-server"])
                         
     except Exception as e:
