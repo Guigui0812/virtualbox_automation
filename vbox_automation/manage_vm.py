@@ -1,5 +1,15 @@
 import subprocess
 
+# Code de la partie 4 pour utiliser la fonction d'importation de VM de VirtualBox
+def import_vm(vm_path, vm_name):
+
+    try:
+        subprocess.run(["VBoxManage", "import", vm_path, "--vsys", "0", "--vmname", vm_name])
+
+    except Exception as e:
+        print("Une erreur est survenue lors de l'importation de la VM :", str(e))
+
+# Code de la partie 4 pour utiliser la fonction de clonage de VM de VirtualBox
 def clone_vm(vm_name, clone_name):
 
     try:
@@ -39,4 +49,4 @@ def get_vm():
         return vm_list
     
     except Exception as e:
-        print("An error occurred:", str(e))
+        print("Une erreur est survenue lors de la récupération de la liste des VM :", str(e))

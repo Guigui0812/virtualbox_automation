@@ -44,16 +44,6 @@ def get_vm_ip(vm_name):
     
     return None
 
-### Fonctions permettant de configurer une VM en réseau interne ###
-
-def configure_internal_network(vm_name, interface_nb):
-
-    try:
-        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "intnet"])
-    
-    except Exception as e:
-        print("La configuration du réseau interne a échoué :", str(e))
-
 ### Fonctions permettant de configurer une VM en Host-Only ###
 
 def create_hostonly_network():
@@ -97,10 +87,11 @@ def configure_nat_port_forwarding(vm_name, guest_port, host_port, rule_name, num
     except Exception as e:
         print("La configuration du port forwarding a échoué :", str(e))
 
-def configure_nat_network(vm_name, interface_nb, network_name):
+def configure_simple_nat(vm_name, interface_nb):
 
     try:
-        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "natnetwork", "--nat-network1", network_name])
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "nat"])
+
     except Exception as e:
         print("La configuration du NAT a échoué :", str(e))
 
@@ -122,20 +113,12 @@ def configure_intnet_network(vm_name, interface_nb, network_name):
     except Exception as e:
         print("La configuration du réseau interne a échoué :", str(e))
 
-def configure_simple_nat(vm_name, interface_nb):
-
-    try:
-        subprocess.run(["VBoxManage", "modifyvm", vm_name, f"--nic{interface_nb}", "nat"])
-
-    except Exception as e:
-        print("La configuration du NAT a échoué :", str(e))
-
 # Prompt SSH pour la connexion à la VM et exécution de commandes
-def ssh_to_vm(vm_ip, username, password):
+def ssh_to_vm(vm_ip, username, password, port):
     try:
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(vm_ip, port=22, username=username, password=password)
+        ssh_client.connect(vm_ip, port, username=username, password=password)
 
         connection_open = True
 
