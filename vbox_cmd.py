@@ -4,7 +4,9 @@ import re
 import vbox_automation
 import subprocess
 
-# Vérifier les types d'OS afin de les prendre en charge
+# Faire deux installations distinctes : ubuntu desktop et ubuntu server
+
+
 
 # En fonction du type de network, utiliser une ip différente pour se connecter à la VM
 
@@ -192,11 +194,10 @@ def vm_network_menu(vm_name):
         print("2 - Bridged")
         print("3 - Host-only")
         print("4 - Internal")
-        print("5 - NAT Network")
 
         option = input("Entrez votre choix: ")
 
-        while option not in ["1", "2", "3", "4", "5"]:
+        while option not in ["1", "2", "3", "4"]:
             print("Option invalide.")
             option = input("Entrez votre choix: ")
 

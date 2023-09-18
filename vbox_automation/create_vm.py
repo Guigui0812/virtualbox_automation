@@ -1,6 +1,8 @@
 import subprocess
 
 # iso path: C:\Users\Guillaume\Downloads\ubuntu-22.04.3-live-server-amd64.iso
+
+# C:\Users\Guillaume\Downloads\ubuntu-22.04.3-desktop-amd64.iso
 # Automatiser le user.
 
 # Fonction pour récupérer les OS supportés
@@ -38,6 +40,8 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
         # Configuration de la mémoire vive, du nombre de processeurs et de la taille du disque dur
         subprocess.run(["VBoxManage", "modifyvm", vm_name, "--memory", memory_mb, "--cpus", nb_cpu])
         subprocess.run(["VBoxManage", "modifyvm", vm_name, "--vram", "128"])
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, "--graphicscontroller", "vmsvga"])
+        subprocess.run(["VBoxManage", "modifyvm", vm_name, "--ioapic", "on"])
         subprocess.run(["VBoxManage", "createhd", "--filename", ("C:\\Users\\Guillaume\\VirtualBox VMs" + f"\\{vm_name}\\{vm_name}.vdi"), "--size", str(disk_size_mb)])
 
         # Création du disque dur virtuel
@@ -46,9 +50,11 @@ def set_vm_config(vm_name, path_to_iso, nb_cpu, memory_mb, disk_size_gb, usernam
 
         # Attachement de l'ISO pour l'installation du système d'exploitation
         subprocess.run(["VBoxManage", "storagectl", vm_name, "--name", "IDE Controller", "--add", "ide"])
-        subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", path_to_iso])
+        subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "0", "--device", "0", "--type", "dvddrive", "--medium", path_to_iso])
+        subprocess.run(["VBoxManage", "storageattach", vm_name, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", "auto-install-ubuntu-server.iso"])
 
-        subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--user", username, "--full-user-name", login, "--password", password, "--time-zone", "CET", "--country", "FR", "--language", "fr_FR"])
+        # Fonctionne pour l'installation de l'OS Ubuntu Desktop mais pas pour Ubuntu Server (+ ajout des additions invitées)
+        #subprocess.run(["VboxManage", "unattended", "install", vm_name, "--iso", path_to_iso, "--locale", "fr_FR", "--country", "FR", "--hostname", (vm_name + ".infra"), "--time-zone", "UTC", "--user", login, "--password", password, "--full-user-name", username, "--install-additions"])
 
         #--post-install-command", "apt-get update && apt-get install openssh-server"])
                         

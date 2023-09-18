@@ -2,9 +2,6 @@ import subprocess
 import paramiko
 import re
 
-# Faire une boucle pour envoyé les commandes à la VM à la suite comme dans le terminal
-# Si "Exit" alors on sort de la boucle, on ferme la connexion et on retourne au menu principal
-
 ### Fonctions permettant de récupérer les informations réseau d'une VM ###
 
 # Obtenir le type de réseau de la VM

@@ -1,0 +1,24 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu-server-autoinstall
+    username: guillaume
+    password: motdepasse
+  ssh:
+    install-server: yes
+    allow-pw: yes
+  locale: fr_FR
+  keyboard:
+    layout: fr
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3:
+          dhcp4: true
+  storage:
+    layout:
+      name: lvm
+  user-data:
+    disable_root: false
